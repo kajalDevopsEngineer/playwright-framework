@@ -105,20 +105,22 @@ async deleteEmployee(empNumber: number): Promise<void> {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      data: {
-        ids: [empNumber],
-      },
+      data: { ids: [empNumber] },
     }
   );
 
   console.log(`Delete employee status: ${response.status()}`);
 
+  // 404 means already deleted - treat as success in teardown
+  if (response.status() === 404) {
+    console.log(`Employee ${empNumber} already deleted — skipping`);
+    return;
+  }
+
   if (!response.ok()) {
     const body = await response.text();
     console.log('Delete employee error:', body.substring(0, 300));
-    throw new Error(
-      `Delete employee failed: ${response.status()}`
-    );
+    throw new Error(`Delete employee failed: ${response.status()}`);
   }
 
   console.log(`Employee ${empNumber} deleted successfully`);

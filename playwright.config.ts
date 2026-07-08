@@ -19,6 +19,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     // CI machines have no display - always headless there
     headless: !!process.env.CI,
+    // Increase timeouts for CI - demo server is slow from GitHub's machines
+    actionTimeout: 30000,
+    navigationTimeout: 30000,
   },
 
   projects: [
