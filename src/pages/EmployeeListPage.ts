@@ -12,34 +12,30 @@ export class EmployeeListPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // Search form locators
-    this.employeeNameInput = page.getByRole('textbox', { name: 'Type for hints...' }).first();
+    this.employeeNameInput = page.getByPlaceholder('Type for hints...');
     this.searchButton = page.getByRole('button', { name: 'Search' });
-    this.noRecordsText = page.getByText(/no records found/i);
-    this.tableRows = page.getByRole('row');
 
-    // Shared nav component
+    // Scope specifically to the span in the results table
+    // not the toast notification which also shows "No Records Found"
+    this.noRecordsText = page.locator('span').filter({
+      hasText: /^No Records Found$/,
+    });
+
+    this.tableRows = page.getByRole('row');
     this.navBar = new NavBarComponent(page);
   }
 
-  /**
-   * Search for an employee by name
-   */
   async searchByName(name: string): Promise<void> {
     await this.employeeNameInput.fill(name);
     await this.searchButton.click();
+    // Wait for search results to load after clicking
+    await this.page.waitForLoadState('networkidle');
   }
 
-  /**
-   * Assert at least one result row is visible in the table
-   */
   async expectResultsVisible(): Promise<void> {
     await expect(this.tableRows.first()).toBeVisible();
   }
 
-  /**
-   * Assert no records message is shown
-   */
   async expectNoRecordsFound(): Promise<void> {
     await expect(this.noRecordsText).toBeVisible();
   }

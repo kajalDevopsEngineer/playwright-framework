@@ -108,28 +108,28 @@ test.describe('Employee management with API setup', () => {
     await employeeListPage.expectResultsVisible();
   });
 
-  test('deleted employee does not appear in search', async ({
-    page,
-  }) => {
-    const loginPage = new LoginPage(page);
-    const dashboardPage = new DashboardPage(page);
-    const employeeListPage = new EmployeeListPage(page);
+ test('deleted employee does not appear in search', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const dashboardPage = new DashboardPage(page);
+  const employeeListPage = new EmployeeListPage(page);
 
-    // Delete via API first
-    await apiClient.deleteEmployee(createdEmployee.empNumber);
+  // Delete via API first
+  await apiClient.deleteEmployee(createdEmployee.empNumber);
 
-    // Then verify via UI it's gone
-    await loginPage.open();
-    await loginPage.login('Admin', 'admin123');
-    await dashboardPage.expectDashboardVisible();
-    await dashboardPage.navBar.goToPIM();
+  // Wait briefly for server to process deletion
+  // OrangeHRM demo has eventual consistency - search index
+  // takes a moment to reflect the deletion
+  await page.waitForTimeout(2000);
 
-    await employeeListPage.searchByName(
-      createdEmployee.firstName
-    );
-    await employeeListPage.expectNoRecordsFound();
+  // Then verify via UI it's gone
+  await loginPage.open();
+  await loginPage.login('Admin', 'admin123');
+  await dashboardPage.expectDashboardVisible();
+  await dashboardPage.navBar.goToPIM();
 
-    // Set to null so afterEach doesn't try to delete again
-    createdEmployee = null;
-  });
+  await employeeListPage.searchByName(createdEmployee.firstName);
+  await employeeListPage.expectNoRecordsFound();
+
+  createdEmployee = null;
+});
 });
