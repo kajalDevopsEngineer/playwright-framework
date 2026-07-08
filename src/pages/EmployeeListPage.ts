@@ -15,7 +15,7 @@ export class EmployeeListPage extends BasePage {
     // Search form locators
     this.employeeNameInput = page.getByRole('textbox', { name: 'Type for hints...' }).first();
     this.searchButton = page.getByRole('button', { name: 'Search' });
-    this.noRecordsText = page.locator('#oxd-toaster_1').getByText('No Records Found');
+    this.noRecordsText = page.getByText(/no records found/i);
     this.tableRows = page.getByRole('row');
 
     // Shared nav component
