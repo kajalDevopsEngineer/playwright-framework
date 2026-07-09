@@ -12,7 +12,7 @@ export class EmployeeListPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    this.employeeNameInput = page.getByPlaceholder('Type for hints...');
+    this.employeeNameInput = page.getByPlaceholder('Type for hints...').first();
     this.searchButton = page.getByRole('button', { name: 'Search' });
 
     // Scope specifically to the span in the results table
