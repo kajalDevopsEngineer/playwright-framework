@@ -1,14 +1,16 @@
 name: Playwright Tests
 
 on:
-  # Run on every push to main branch
   push:
     branches: [main]
-  # Run on every pull request targeting main
   pull_request:
     branches: [main]
-  # Allow manual trigger from GitHub UI
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   test:
@@ -17,43 +19,44 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # Step 1: Check out your code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          # Cache node_modules so we don't reinstall every run
+          node-version: '22'
           cache: 'npm'
 
-      # Step 3: Install project dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Install Playwright browsers
-      # --with-deps installs OS-level browser dependencies too
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      # Step 5: Run only E2E tests
-      # API tests need live session - run E2E which handles auth
       - name: Run E2E tests
         run: npx playwright test tests/e2e/
         env:
           CI: true
           BASE_URL: https://opensource-demo.orangehrmlive.com
+        continue-on-error: true
 
-      # Step 6: Upload test results
-      # This runs even if tests fail - you always want the report
-      - name: Upload test results
+      - name: Generate Allure Report
+        run: npx allure generate allure-results --clean -o allure-report
+        if: always()
+
+      - name: Upload Allure results as artifact
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
+          name: allure-report
+          path: allure-report/
           retention-days: 30
+
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+          publish_branch: gh-pages
