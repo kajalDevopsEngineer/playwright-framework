@@ -6,7 +6,15 @@ test('user can login with valid credentials', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
 
-  await loginPage.open();
-  await loginPage.login('Admin', 'admin123');
-  await dashboardPage.expectDashboardVisible();
+  await test.step('Open login page', async () => {
+    await loginPage.open();
+  });
+
+  await test.step('Login with valid credentials', async () => {
+    await loginPage.login('Admin', 'admin123');
+  });
+
+  await test.step('Verify dashboard is visible', async () => {
+    await dashboardPage.expectDashboardVisible();
+  });
 });

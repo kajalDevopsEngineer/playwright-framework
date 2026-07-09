@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","26340","user can search for an employee by name","chromium","2026-07-09","passed","2026-07-09","Employee List","e2e\employeeSearch.spec.ts","",""
+"","13592","deleted employee does not appear in search","chromium","2026-07-09","passed","2026-07-09","Employee management with API setup","e2e\employeeWithApiSetup.spec.ts","",""
+"","21502","newly created employee appears in search results","chromium","2026-07-09","passed","2026-07-09","Employee management with API setup","e2e\employeeWithApiSetup.spec.ts","",""
+"","18932","user can login with valid credentials","chromium","2026-07-09","passed","2026-07-09","","e2e\login.spec.ts","",""
+"","17798","user sees no records for a non-existent employee","chromium","2026-07-09","passed","2026-07-09","Employee List","e2e\employeeSearch.spec.ts","",""

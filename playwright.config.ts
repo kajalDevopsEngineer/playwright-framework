@@ -7,23 +7,19 @@ export default defineConfig({
   retries: process.env.CI ? 0 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html'],
-    ['list'],
-  ],
-
+  ['line'],
+  ['allure-playwright'],
+],
   use: {
     baseURL:
       process.env.BASE_URL ||
       'https://opensource-demo.orangehrmlive.com',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    // CI machines have no display - always headless there
     headless: !!process.env.CI,
-    // Increase timeouts for CI - demo server is slow from GitHub's machines
     actionTimeout: 30000,
     navigationTimeout: 30000,
   },
-
   projects: [
     {
       name: 'chromium',
