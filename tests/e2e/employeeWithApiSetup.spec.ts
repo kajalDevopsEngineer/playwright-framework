@@ -88,7 +88,7 @@ test.describe('Employee management with API setup', () => {
 
   // ─── THE ACTUAL TESTS ─────────────────────────────
 
-  test('newly created employee appears in search results', async ({
+  test('newly created employee appears in search results @smoke', async ({
     page,
   }) => {
     const loginPage = new LoginPage(page);
@@ -108,7 +108,7 @@ test.describe('Employee management with API setup', () => {
     await employeeListPage.expectResultsVisible();
   });
 
- test('deleted employee does not appear in search', async ({ page }) => {
+ test('deleted employee does not appear in search @regression', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
   const employeeListPage = new EmployeeListPage(page);

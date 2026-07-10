@@ -1,0 +1,13 @@
+Creating employee: Automation TestUser
+Create employee status: 200
+Created employee: {
+  "empNumber": 227,
+  "lastName": "TestUser",
+  "firstName": "Automation",
+  "middleName": "",
+  "employeeId": "T914954",
+  "terminationId": null
+}
+Employee created with ID: 227
+Delete employee status: 200
+Employee 227 deleted successfully

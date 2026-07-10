@@ -13,20 +13,25 @@ test.describe('Employee List', () => {
     dashboardPage = new DashboardPage(page);
     employeeListPage = new EmployeeListPage(page);
 
-    // Login and navigate to Employee List before each test
     await loginPage.open();
     await loginPage.login('Admin', 'admin123');
     await dashboardPage.expectDashboardVisible();
     await dashboardPage.navBar.goToPIM();
   });
 
-  test('user can search for an employee by name', async () => {
-    await employeeListPage.searchByName('Admin');
-    await employeeListPage.expectResultsVisible();
-  });
+  // Smoke - basic search working is critical
+  test('user can search for an employee by name @smoke',
+    async () => {
+      await employeeListPage.searchByName('Admin');
+      await employeeListPage.expectResultsVisible();
+    }
+  );
 
-  test('user sees no records for a non-existent employee', async () => {
-    await employeeListPage.searchByName('ZZZNonExistentName');
-    await employeeListPage.expectNoRecordsFound();
-  });
+  // Regression only - edge case, not critical path
+  test('user sees no records for a non-existent employee @regression',
+    async () => {
+      await employeeListPage.searchByName('ZZZNonExistentName');
+      await employeeListPage.expectNoRecordsFound();
+    }
+  );
 });
