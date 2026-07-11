@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../src/pages/LoginPage';
 import { DashboardPage } from '../../src/pages/DashboardPage';
 import { EmployeeListPage } from '../../src/pages/EmployeeListPage';
@@ -34,4 +34,5 @@ test.describe('Employee List', () => {
       await employeeListPage.expectNoRecordsFound();
     }
   );
+
 });

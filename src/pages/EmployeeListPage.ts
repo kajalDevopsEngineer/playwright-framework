@@ -29,7 +29,7 @@ export class EmployeeListPage extends BasePage {
     await this.employeeNameInput.fill(name);
     await this.searchButton.click();
     // Wait for search results to load after clicking
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async expectResultsVisible(): Promise<void> {

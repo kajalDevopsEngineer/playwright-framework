@@ -5,7 +5,11 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 0 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 1,
+
+  // Add this line
+  globalTeardown: './src/utils/globalTeardown.ts',
+
   reporter: [
   ['line'],
   ['allure-playwright'],

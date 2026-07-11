@@ -1,0 +1,11 @@
+# Create .gitignore in project root
+cat > .gitignore << 'EOF'
+node_modules/
+dist/
+playwright-report/
+test-results/
+allure-results/
+allure-report/
+auth-state.json
+.env
+EOF

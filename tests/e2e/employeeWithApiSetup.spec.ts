@@ -22,53 +22,50 @@ test.describe('Employee management with API setup', () => {
 
   // ─── ONE-TIME SETUP ───────────────────────────────
   test.beforeAll(async () => {
-    // Authenticate via browser, save state for API use
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
-    const page = await context.newPage();
+  // Set timeout for this hook specifically
+  test.setTimeout(60000);
 
-    await page.goto(`${BASE_URL}/web/index.php/auth/login`);
-    await page.getByPlaceholder('Username').fill('Admin');
-    await page.getByPlaceholder('Password').fill('admin123');
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page
-      .getByRole('heading', { name: 'Dashboard' })
-      .waitFor();
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
-    await context.storageState({ path: STORAGE_STATE });
-    await browser.close();
+  await page.goto(`${BASE_URL}/web/index.php/auth/login`);
+  await page.getByPlaceholder('Username').fill('Admin');
+  await page.getByPlaceholder('Password').fill('admin123');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page
+    .getByRole('heading', { name: 'Dashboard' })
+    .waitFor({ timeout: 30000 });
 
-    // Create API client with saved auth
-    requestContext = await request.newContext({
-      baseURL: BASE_URL,
-      storageState: STORAGE_STATE,
-    });
-    apiClient = new APIClient(requestContext, BASE_URL);
+  await context.storageState({ path: STORAGE_STATE });
+  await browser.close();
+
+  requestContext = await request.newContext({
+    baseURL: BASE_URL,
+    storageState: STORAGE_STATE,
   });
+  apiClient = new APIClient(requestContext, BASE_URL);
+});
 
   // ─── PER-TEST SETUP ───────────────────────────────
   test.beforeEach(async () => {
-    // Create fresh employee data for this test
-    const employeeData = createEmployeeData({
-      firstName: 'Automation',
-      lastName: 'TestUser',
-    });
-
-    console.log(
-      `Creating employee: ${employeeData.firstName} ${employeeData.lastName}`
-    );
-
-    // Create the employee via API - fast, no UI needed
-    createdEmployee = await apiClient.createEmployee(
-      employeeData.firstName,
-      employeeData.lastName,
-      employeeData.employeeId
-    );
-
-    console.log(
-      `Employee created with ID: ${createdEmployee.empNumber}`
-    );
+  const employeeData = createEmployeeData({
+    firstName: `Auto${Date.now()}`,
+    lastName: 'TestUser',
   });
+
+  console.log(
+    `Creating employee: ${employeeData.firstName} ${employeeData.lastName}`
+  );
+
+  createdEmployee = await apiClient.createEmployee(
+    employeeData.firstName,
+    employeeData.lastName,
+    employeeData.employeeId
+  );
+
+  console.log(`Employee created with ID: ${createdEmployee.empNumber}`);
+});
 
   // ─── PER-TEST TEARDOWN ────────────────────────────
   test.afterEach(async () => {
@@ -119,7 +116,7 @@ test.describe('Employee management with API setup', () => {
   // Wait briefly for server to process deletion
   // OrangeHRM demo has eventual consistency - search index
   // takes a moment to reflect the deletion
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(5000);
 
   // Then verify via UI it's gone
   await loginPage.open();
