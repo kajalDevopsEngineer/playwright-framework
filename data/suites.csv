@@ -1,4 +1,4 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","6649","newly created employee appears in search results @smoke","chromium","2026-07-13","passed","2026-07-13","Employee management with API setup","e2e/employeeWithApiSetup.spec.ts","",""
-"","5210","user can search for an employee by name @smoke","chromium","2026-07-13","passed","2026-07-13","Employee List","e2e/employeeSearch.spec.ts","",""
-"","3752","user can login with valid credentials @smoke @critical","chromium","2026-07-13","passed","2026-07-13","","e2e/login.spec.ts","",""
+"","7182","newly created employee appears in search results @smoke","chromium","2026-07-19","passed","2026-07-19","Employee management with API setup","e2e/employeeWithApiSetup.spec.ts","",""
+"","6618","user can search for an employee by name @smoke","chromium","2026-07-19","passed","2026-07-19","Employee List","e2e/employeeSearch.spec.ts","",""
+"","4876","user can login with valid credentials @smoke @critical","chromium","2026-07-19","passed","2026-07-19","","e2e/login.spec.ts","",""
