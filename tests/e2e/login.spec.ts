@@ -1,11 +1,13 @@
-import { test } from '@playwright/test';
-import { LoginPage } from '../../src/pages/LoginPage';
-import { DashboardPage } from '../../src/pages/DashboardPage';
+import { test, expect } from '../../src/fixtures';
 
-// @smoke @critical — login is the most critical path
-// if this fails, nothing else matters
 test('user can login with valid credentials @smoke @critical',
   async ({ page }) => {
+    // Login test uses raw page - it's testing login itself
+    // so it can't use authenticatedPage fixture
+    // (that fixture already assumes login worked)
+    const { LoginPage } = await import('../../src/pages/LoginPage');
+    const { DashboardPage } = await import('../../src/pages/DashboardPage');
+
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
 

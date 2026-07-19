@@ -63,19 +63,24 @@ export class NetworkMocks {
    * Tests loading states and timeout handling.
    */
   async mockSlowResponse(
-    urlPattern: string,
-    delayMs: number
-  ): Promise<void> {
-    await this.page.route(urlPattern, async route => {
-      // Wait for the delay, then pass through to real server
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+  urlPattern: string,
+  delayMs: number
+): Promise<void> {
+  await this.page.route(urlPattern, async route => {
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+    // Check if route is still active before continuing
+    try {
       await route.continue();
-    });
+    } catch (e) {
+      // Route already handled - this is fine
+      console.log('[Mock] Route already handled, skipping continue');
+    }
+  });
 
-    console.log(
-      `[Mock] Slow response (${delayMs}ms delay) configured for: ${urlPattern}`
-    );
-  }
+  console.log(
+    `[Mock] Slow response (${delayMs}ms delay) configured for: ${urlPattern}`
+  );
+}
 
   /**
    * Mock an endpoint to return a 401 unauthorized response.
