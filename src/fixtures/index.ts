@@ -23,57 +23,38 @@ type CustomFixtures = {
  */
 export const test = base.extend<CustomFixtures>({
 
-  /**
-   * authenticatedPage fixture
-   * Provides a browser page that's already logged in.
-   * Login happens via UI once, state is shared.
-   */
   authenticatedPage: async ({ page }, use) => {
-    // SETUP - runs before the test
     const loginPage = new LoginPage(page);
     await loginPage.open();
     await loginPage.login('Admin', 'admin123');
 
-    // Wait for dashboard to confirm login succeeded
+    // Wait for URL redirect to complete
+    await page.waitForURL('**/dashboard/**', { timeout: 45000 });
+
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.expectDashboardVisible();
 
-    // Hand the authenticated page to the test
-    // Test runs here - everything between use() call
     await use(page);
-
-    // TEARDOWN - runs after the test
-    // (nothing needed here - page closes automatically)
   },
 
-  /**
-   * loginPage fixture
-   * Provides a LoginPage instance tied to current page
-   */
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
   },
 
-  /**
-   * dashboardPage fixture
-   * Provides a DashboardPage instance tied to current page
-   */
   dashboardPage: async ({ authenticatedPage }, use) => {
-    // Notice: uses authenticatedPage, not page
-    // So dashboardPage fixture automatically means logged in
     await use(new DashboardPage(authenticatedPage));
   },
 
-  /**
-   * employeeListPage fixture
-   * Provides EmployeeListPage + navigates to PIM automatically
-   */
   employeeListPage: async ({ authenticatedPage, dashboardPage }, use) => {
-    // Navigate to PIM as part of fixture setup
     await dashboardPage.navBar.goToPIM();
+
+    // Wait for PIM page to fully load
+    await authenticatedPage.waitForURL('**/pim/**', { timeout: 45000 });
+    await authenticatedPage.waitForLoadState('domcontentloaded');
+    await authenticatedPage.waitForTimeout(2000);
+
     await use(new EmployeeListPage(authenticatedPage));
   },
-
 });
 
 // Re-export expect so tests only need one import

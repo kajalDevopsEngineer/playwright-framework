@@ -1,0 +1,10 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+allure-results/
+allure-report/
+.git/
+.gitignore
+*.md
+auth-state.json
