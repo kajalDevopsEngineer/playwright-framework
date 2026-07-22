@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { env } from './src/config/environments';
 
 export default defineConfig({
   testDir: './tests',
@@ -7,24 +8,22 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 1,
   globalTeardown: './src/utils/globalTeardown.ts',
-
-  // Increase overall test timeout for CI/Docker
-  timeout: process.env.CI ? 90000 : 60000,
+  timeout: env.timeouts.test,
 
   reporter: [
     ['line'],
     ['allure-playwright'],
   ],
+
   use: {
-    baseURL:
-      process.env.BASE_URL ||
-      'https://opensource-demo.orangehrmlive.com',
+    baseURL: env.baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     headless: !!process.env.CI,
-    actionTimeout: 45000,
-    navigationTimeout: 45000,
+    actionTimeout: env.timeouts.action,
+    navigationTimeout: env.timeouts.navigation,
   },
+
   projects: [
     {
       name: 'chromium',

@@ -2,34 +2,34 @@ import { test as base, Page } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { EmployeeListPage } from '../pages/EmployeeListPage';
+import { env } from '../config/environments';
 
-/**
- * Define the shape of our custom fixtures.
- * This tells TypeScript exactly what our fixtures provide.
- */
 type CustomFixtures = {
-  // A page that's already authenticated
   authenticatedPage: Page;
-  // Pre-built page objects ready to use
   loginPage: LoginPage;
   dashboardPage: DashboardPage;
   employeeListPage: EmployeeListPage;
 };
 
-/**
- * Extend Playwright's base test with our custom fixtures.
- * Every test that imports from this file gets access
- * to authenticatedPage, loginPage, dashboardPage etc.
- */
 export const test = base.extend<CustomFixtures>({
 
   authenticatedPage: async ({ page }, use) => {
+    page.setDefaultTimeout(env.timeouts.action);
+    page.setDefaultNavigationTimeout(env.timeouts.navigation);
+
     const loginPage = new LoginPage(page);
     await loginPage.open();
-    await loginPage.login('Admin', 'admin123');
 
-    // Wait for URL redirect to complete
-    await page.waitForURL('**/dashboard/**', { timeout: 45000 });
+    // Use credentials from environment config
+    // No hardcoded credentials in test code
+    await loginPage.login(
+      env.credentials.username,
+      env.credentials.password
+    );
+
+    await page.waitForURL('**/dashboard/**', {
+      timeout: env.timeouts.navigation,
+    });
 
     const dashboardPage = new DashboardPage(page);
     await dashboardPage.expectDashboardVisible();
@@ -47,15 +47,13 @@ export const test = base.extend<CustomFixtures>({
 
   employeeListPage: async ({ authenticatedPage, dashboardPage }, use) => {
     await dashboardPage.navBar.goToPIM();
-
-    // Wait for PIM page to fully load
-    await authenticatedPage.waitForURL('**/pim/**', { timeout: 45000 });
+    await authenticatedPage.waitForURL('**/pim/**', {
+      timeout: env.timeouts.navigation,
+    });
     await authenticatedPage.waitForLoadState('domcontentloaded');
     await authenticatedPage.waitForTimeout(2000);
-
     await use(new EmployeeListPage(authenticatedPage));
   },
 });
 
-// Re-export expect so tests only need one import
 export { expect } from '@playwright/test';
