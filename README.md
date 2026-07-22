@@ -159,6 +159,34 @@ Allure provides step-by-step test breakdown, categorised views, and a profession
 
 ---
 
+## ☸️ Kubernetes Deployment
+
+The framework includes Kubernetes manifests for running tests at scale in a K8s cluster.
+
+### Running tests as a K8s Job
+
+```bash
+# Create secrets first (ask DevOps for values)
+kubectl apply -f k8s/secrets.example.yaml
+
+# Run smoke tests as a K8s Job
+kubectl apply -f k8s/test-job.yaml
+
+# Monitor the job
+kubectl get jobs
+kubectl logs job/playwright-tests
+
+# Run tests in parallel across 4 pods
+kubectl apply -f k8s/parallel-test-job.yaml
+```
+
+### Why Kubernetes for test execution?
+
+- **Scale** — run 50 pods in parallel, reduce suite time from hours to minutes
+- **Isolation** — each pod is a clean environment, no shared state
+- **Resource management** — CPU and memory limits prevent one job starving others
+- **Secrets management** — credentials injected from K8s Secrets, never in code
+
 ## 👩‍💻 Author
 
 **Kajal Potghan** — Senior SDET  

@@ -1,0 +1,78 @@
+# ─────────────────────────────────────────────
+# Kubernetes Job for running Playwright tests
+#
+# A Job runs a container to completion.
+# Perfect for test execution - has a clear
+# start and end, unlike a web server.
+# ─────────────────────────────────────────────
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-tests
+  labels:
+    app: playwright-framework
+    type: e2e-tests
+
+spec:
+  # Retry the job up to 2 times if it fails
+  # Handles transient infrastructure failures
+  backoffLimit: 2
+
+  template:
+    metadata:
+      labels:
+        app: playwright-tests
+
+    spec:
+      # Never restart the container automatically
+      # Job handles retry logic above
+      restartPolicy: Never
+
+      containers:
+      - name: playwright
+        # Your Docker image built from the Dockerfile
+        image: playwright-framework:latest
+
+        # Default command from Dockerfile runs all tests
+        # Override here for specific suites
+        command: ["npx", "playwright", "test", "tests/e2e/", "--grep", "@smoke"]
+
+        # Environment variables injected into the container
+        env:
+        # Which environment to test against
+        - name: ENV
+          value: "staging"
+
+        # CI mode - headless, strict timeouts
+        - name: CI
+          value: "true"
+
+        # Sensitive values come from K8s Secret
+        # Never hardcoded here
+        - name: BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: test-secrets
+              key: staging-url
+
+        - name: STAGING_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: test-secrets
+              key: staging-username
+
+        - name: STAGING_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: test-secrets
+              key: staging-password
+
+        # Resource limits - prevent one job consuming all cluster resources
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"

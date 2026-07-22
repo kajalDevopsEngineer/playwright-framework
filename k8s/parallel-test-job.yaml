@@ -1,0 +1,52 @@
+# ─────────────────────────────────────────────
+# Parallel test execution using K8s Jobs
+#
+# Creates 4 jobs, each running a different
+# shard of the test suite simultaneously.
+# Reduces execution time by 75%.
+# ─────────────────────────────────────────────
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-tests-parallel
+spec:
+  # Run 4 pods in parallel
+  parallelism: 4
+  # Total number of pods to complete
+  completions: 4
+  backoffLimit: 2
+
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: playwright
+        image: playwright-framework:latest
+        command:
+        - "npx"
+        - "playwright"
+        - "test"
+        - "tests/e2e/"
+        # JOB_COMPLETION_INDEX is automatically set by K8s
+        # 0, 1, 2, 3 for each pod
+        - "--shard=$(JOB_COMPLETION_INDEX)/4"
+        env:
+        - name: CI
+          value: "true"
+        - name: JOB_COMPLETION_INDEX
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+        - name: BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: test-secrets
+              key: staging-url
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
